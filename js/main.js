@@ -3,6 +3,12 @@
 const OFFERS = [];
 const MOCK_AMOUNT = 8;
 const TYPE = [`palace`, `flat`, `house`, `bungalow`];
+const TYPE_RU = {
+  palace: `Дворец`,
+  flat: `Квартира`,
+  house: `Дом`,
+  bungalow: `Бунгало`
+};
 const TIME = [`12:00`, `13:00`, `14:00`];
 const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
 const PHOTOS = [
@@ -14,11 +20,20 @@ const PRICE_MIN = 2000;
 const PRICE_MAX = 30000;
 const ROOMS = 4;
 const GUESTS = 6;
-const TITLE = `Заголовок объявления`;
-const DESCRIPTION = `Описание предложения`;
+const TITLE = [
+  `Уютное гнездышко для молодоженов`,
+  `Цыганское гетто`,
+  `Коробка под мостом`
+];
+const DESCRIPTION = [
+  `Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.`,
+  `Отличный выбор для любителей самостоятельных поездок. Для тех, кто не признаёт путеводители и предпочитает окунуться в настоящую местную атмосферу!`,
+  `Самый бюджетный вариант! Жильё в центре города. Незабываемые впечатления о поездке гарантированы!`
+];
 const map = document.querySelector(`.map`);
 const mapPins = document.querySelector(`.map__pins`);
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
 const PIN_SIZE = 62;
 const pinYMin = 130;
 const pinYMax = 630;
@@ -60,7 +75,7 @@ const renderOffersArray = function (index) {
         "avatar": getAvatar(index)
       },
       "offer": {
-        "title": TITLE,
+        "title": getRandomElement(TITLE),
         "address": `${getRandomInRange(pinXMin, pinXMax)}, ${getRandomInRange(pinYMin, pinYMax - PIN_SIZE)}`,
         "price": getRandomInRange(PRICE_MIN, PRICE_MAX),
         "type": `${getRandomElement(TYPE)}`,
@@ -69,7 +84,7 @@ const renderOffersArray = function (index) {
         "checkin": `${getRandomElement(TIME)}`,
         "checkout": `${getRandomElement(TIME)}`,
         "features": `${generateRandomArray(FEATURES)}`,
-        "description": DESCRIPTION,
+        "description": getRandomElement(DESCRIPTION),
         "photos": `${generateRandomArray(PHOTOS)}`
       },
       "location": {
@@ -113,8 +128,65 @@ const createFragment = function (array, callback) {
   return fragment;
 };
 
+const popAdvertisement = function (array, callback) {
+  const fragment = document.createDocumentFragment();
+  fragment.append(callback(array[0]));
+
+  return fragment;
+};
+
+const generateHotelPics = function () {
+  const hotelPhotos = document.createDocumentFragment();
+
+  for (let i = 0; i < PHOTOS.length; i++) {
+    const pic = document.createElement(`img`);
+    pic.classList.add(`popup__photo`);
+    pic.src = PHOTOS[i];
+    pic.width = 45;
+    pic.height = 40;
+    hotelPhotos.appendChild(pic);
+  }
+  return hotelPhotos;
+};
+
+const renderCard = function (card) {
+  const offerCard = cardTemplate.cloneNode(true);
+  const cardTitle = offerCard.querySelector(`.popup__title`);
+  const cardAddress = offerCard.querySelector(`.popup__text--address`);
+  const cardPrice = offerCard.querySelector(`.popup__text--price`);
+  const cardType = offerCard.querySelector(`.popup__type`);
+  const cardRoomsGuests = offerCard.querySelector(`.popup__text--capacity`);
+  const cardCheck = offerCard.querySelector(`.popup__text--time`);
+  const features = offerCard.querySelector(`.popup__features`);
+  const cardDescription = offerCard.querySelector(`.popup__description`);
+  const cardPhotos = offerCard.querySelector(`.popup__photos`);
+  const cardLink = offerCard.querySelector(`.popup__avatar`);
+
+  // в map перед mapPins вставляет offerCard
+  map.insertBefore(offerCard, mapPins);
+
+  cardTitle.textContent = card.offer.title;
+  cardAddress.textContent = card.offer.address;
+  cardPrice.textContent = `${card.offer.price} ₽ / ночь`;
+  cardType.textContent = TYPE_RU[card.offer.type];
+  cardRoomsGuests.textContent = `${card.offer.rooms} комнаты для ${card.offer.guests} гостей`;
+  cardCheck.textContent = `Заезд после ${card.offer.checkin}, выезд до ${card.offer.checkout}`;
+  // с фичерс что-то не то
+  features.src = card.offer.features;
+  cardDescription.textContent = card.offer.description;
+  cardPhotos.innerHTML = ``;
+  cardPhotos.appendChild(generateHotelPics(card.offer.photos));
+  cardLink.src = getAvatar(getRandomInRange(1, 9));
+
+  const fragmentCard = document.createDocumentFragment();
+  fragmentCard.appendChild(offerCard);
+  map.appendChild(fragmentCard);
+};
+
 const pinsFragment = createFragment(pinsArray, renderOffer);
 mapPins.append(pinsFragment);
 
+const cardsFragment = popAdvertisement(pinsArray, renderCard);
+mapPins.append(cardsFragment);
 
 map.classList.remove(`map--faded`);
