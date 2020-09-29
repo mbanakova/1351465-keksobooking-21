@@ -83,9 +83,9 @@ const renderOffersArray = function (index) {
         "guests": getRandomInRange(1, GUESTS),
         "checkin": `${getRandomElement(TIME)}`,
         "checkout": `${getRandomElement(TIME)}`,
-        "features": `${generateRandomArray(FEATURES)}`,
+        "features": generateRandomArray(FEATURES),
         "description": getRandomElement(DESCRIPTION),
-        "photos": `${generateRandomArray(PHOTOS)}`
+        "photos": generateRandomArray(PHOTOS)
       },
       "location": {
         "x": getRandomInRange(pinXMin, (pinXMax - PIN_SIZE)),
@@ -135,13 +135,25 @@ const popAdvertisement = function (array, callback) {
   return fragment;
 };
 
-const generateHotelPics = function () {
+
+const generateFeaturePics = function (pics) {
+  const featurePhotos = document.createDocumentFragment();
+  for (let i = 0; i < pics.length; i++) {
+    const pic = document.createElement(`img`);
+    pic.classList.add(`popup__features`);
+    pic.alt = pics[i];
+    featurePhotos.appendChild(pic);
+  }
+  return featurePhotos;
+};
+
+const generateHotelPics = function (pics) {
   const hotelPhotos = document.createDocumentFragment();
 
-  for (let i = 0; i < PHOTOS.length; i++) {
+  for (let i = 0; i < pics.length; i++) {
     const pic = document.createElement(`img`);
     pic.classList.add(`popup__photo`);
-    pic.src = PHOTOS[i];
+    pic.src = pics[i];
     pic.width = 45;
     pic.height = 40;
     hotelPhotos.appendChild(pic);
@@ -171,12 +183,12 @@ const renderCard = function (card) {
   cardType.textContent = TYPE_RU[card.offer.type];
   cardRoomsGuests.textContent = `${card.offer.rooms} комнаты для ${card.offer.guests} гостей`;
   cardCheck.textContent = `Заезд после ${card.offer.checkin}, выезд до ${card.offer.checkout}`;
-  // с фичерс что-то не то
-  features.src = card.offer.features;
+  features.innerHTML = ``;
+  features.appendChild(generateFeaturePics(card.offer.features));
   cardDescription.textContent = card.offer.description;
   cardPhotos.innerHTML = ``;
   cardPhotos.appendChild(generateHotelPics(card.offer.photos));
-  cardLink.src = getAvatar(getRandomInRange(1, 9));
+  cardLink.src = getAvatar(getRandomInRange(1, MOCK_AMOUNT));
 
   const fragmentCard = document.createDocumentFragment();
   fragmentCard.appendChild(offerCard);
@@ -186,7 +198,6 @@ const renderCard = function (card) {
 const pinsFragment = createFragment(pinsArray, renderOffer);
 mapPins.append(pinsFragment);
 
-const cardsFragment = popAdvertisement(pinsArray, renderCard);
-mapPins.append(cardsFragment);
+popAdvertisement(pinsArray, renderCard);
 
 map.classList.remove(`map--faded`);
