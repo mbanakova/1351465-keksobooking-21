@@ -39,6 +39,8 @@ const pinYMin = 130;
 const pinYMax = 630;
 const pinXMin = 0;
 const pinXMax = mapPins.clientWidth;
+const hotelPhotoWidth = 45;
+const hotelPhotoHeight = 40;
 
 
 const getRandomInRange = function (min, max) {
@@ -135,30 +137,22 @@ const popAdvertisement = function (array, callback) {
   return fragment;
 };
 
-
-const generateFeaturePics = function (pics) {
-  const featurePhotos = document.createDocumentFragment();
-  for (let i = 0; i < pics.length; i++) {
-    const pic = document.createElement(`img`);
-    pic.classList.add(`popup__features`);
-    pic.alt = pics[i];
-    featurePhotos.appendChild(pic);
-  }
-  return featurePhotos;
-};
-
-const generateHotelPics = function (pics) {
+const generateHotelPictures = function (pics) {
   const hotelPhotos = document.createDocumentFragment();
 
   for (let i = 0; i < pics.length; i++) {
     const pic = document.createElement(`img`);
     pic.classList.add(`popup__photo`);
     pic.src = pics[i];
-    pic.width = 45;
-    pic.height = 40;
+    pic.width = hotelPhotoWidth;
+    pic.height = hotelPhotoHeight;
     hotelPhotos.appendChild(pic);
   }
   return hotelPhotos;
+};
+
+const eraseBlock = function (div) {
+  div.style.display = `none`;
 };
 
 const renderCard = function (card) {
@@ -177,18 +171,73 @@ const renderCard = function (card) {
   // в map перед mapPins вставляет offerCard
   map.insertBefore(offerCard, mapPins);
 
-  cardTitle.textContent = card.offer.title;
-  cardAddress.textContent = card.offer.address;
-  cardPrice.textContent = `${card.offer.price} ₽ / ночь`;
-  cardType.textContent = TYPE_RU[card.offer.type];
-  cardRoomsGuests.textContent = `${card.offer.rooms} комнаты для ${card.offer.guests} гостей`;
-  cardCheck.textContent = `Заезд после ${card.offer.checkin}, выезд до ${card.offer.checkout}`;
-  features.innerHTML = ``;
-  features.appendChild(generateFeaturePics(card.offer.features));
-  cardDescription.textContent = card.offer.description;
-  cardPhotos.innerHTML = ``;
-  cardPhotos.appendChild(generateHotelPics(card.offer.photos));
-  cardLink.src = getAvatar(getRandomInRange(1, MOCK_AMOUNT));
+  if (card.offer.title) {
+    cardTitle.textContent = card.offer.title;
+  } else {
+    eraseBlock(cardTitle);
+  }
+
+  if (card.offer.address) {
+    cardAddress.textContent = card.offer.address;
+  } else {
+    eraseBlock(cardAddress);
+  }
+
+  if (card.offer.price) {
+    cardPrice.textContent = `${card.offer.price} ₽ / ночь`;
+  } else {
+    eraseBlock(cardPrice);
+  }
+
+  if (card.offer.type) {
+    cardType.textContent = TYPE_RU[card.offer.type];
+  } else {
+    eraseBlock(cardType);
+  }
+
+  if (card.offer.guests) {
+    cardRoomsGuests.textContent = `${card.offer.rooms} комнаты для ${card.offer.guests} гостей`;
+  } else {
+    eraseBlock(cardRoomsGuests);
+  }
+
+  if (card.offer.checkout && card.offer.checkin) {
+    cardCheck.textContent = `Заезд после ${card.offer.checkin}, выезд до ${card.offer.checkout}`;
+  } else {
+    eraseBlock(cardCheck);
+  }
+
+  if (card.offer.features) {
+    let stock = ``;
+    for (let i = 0; i < card.offer.features.length; i++) {
+      if (i < card.offer.features.length - 1) {
+        stock += `${card.offer.features[i]}, `;
+      } else {
+        stock += `${card.offer.features[i]}`;
+      }
+    }
+    features.innerHTML = stock;
+  } else {
+    eraseBlock(features);
+  }
+
+  if (card.offer.description) {
+    cardDescription.textContent = card.offer.description;
+  } else {
+    eraseBlock(cardDescription);
+  }
+
+  if (card.offer.photos) {
+    cardPhotos.innerHTML = ``;
+    cardPhotos.appendChild(generateHotelPictures(card.offer.photos));
+  } else {
+    eraseBlock(cardPhotos);
+  }
+  if (card.author.avatar) {
+    cardLink.src = getAvatar(getRandomInRange(1, MOCK_AMOUNT));
+  } else {
+    eraseBlock(cardLink);
+  }
 
   const fragmentCard = document.createDocumentFragment();
   fragmentCard.appendChild(offerCard);
