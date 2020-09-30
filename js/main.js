@@ -3,6 +3,12 @@
 const OFFERS = [];
 const MOCK_AMOUNT = 8;
 const TYPE = [`palace`, `flat`, `house`, `bungalow`];
+const TYPE_RU = {
+  palace: `Дворец`,
+  flat: `Квартира`,
+  house: `Дом`,
+  bungalow: `Бунгало`
+};
 const TIME = [`12:00`, `13:00`, `14:00`];
 const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
 const PHOTOS = [
@@ -14,16 +20,27 @@ const PRICE_MIN = 2000;
 const PRICE_MAX = 30000;
 const ROOMS = 4;
 const GUESTS = 6;
-const TITLE = `Заголовок объявления`;
-const DESCRIPTION = `Описание предложения`;
+const TITLE = [
+  `Уютное гнездышко для молодоженов`,
+  `Цыганское гетто`,
+  `Коробка под мостом`
+];
+const DESCRIPTION = [
+  `Великолепная квартира-студия в центре Токио. Подходит как туристам, так и бизнесменам. Квартира полностью укомплектована и недавно отремонтирована.`,
+  `Отличный выбор для любителей самостоятельных поездок. Для тех, кто не признаёт путеводители и предпочитает окунуться в настоящую местную атмосферу!`,
+  `Самый бюджетный вариант! Жильё в центре города. Незабываемые впечатления о поездке гарантированы!`
+];
 const map = document.querySelector(`.map`);
 const mapPins = document.querySelector(`.map__pins`);
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
 const PIN_SIZE = 62;
 const pinYMin = 130;
 const pinYMax = 630;
 const pinXMin = 0;
 const pinXMax = mapPins.clientWidth;
+const hotelPhotoWidth = 45;
+const hotelPhotoHeight = 40;
 
 
 const getRandomInRange = function (min, max) {
@@ -60,7 +77,7 @@ const renderOffersArray = function (index) {
         "avatar": getAvatar(index)
       },
       "offer": {
-        "title": TITLE,
+        "title": getRandomElement(TITLE),
         "address": `${getRandomInRange(pinXMin, pinXMax)}, ${getRandomInRange(pinYMin, pinYMax - PIN_SIZE)}`,
         "price": getRandomInRange(PRICE_MIN, PRICE_MAX),
         "type": `${getRandomElement(TYPE)}`,
@@ -68,9 +85,9 @@ const renderOffersArray = function (index) {
         "guests": getRandomInRange(1, GUESTS),
         "checkin": `${getRandomElement(TIME)}`,
         "checkout": `${getRandomElement(TIME)}`,
-        "features": `${generateRandomArray(FEATURES)}`,
-        "description": DESCRIPTION,
-        "photos": `${generateRandomArray(PHOTOS)}`
+        "features": generateRandomArray(FEATURES),
+        "description": getRandomElement(DESCRIPTION),
+        "photos": generateRandomArray(PHOTOS)
       },
       "location": {
         "x": getRandomInRange(pinXMin, (pinXMax - PIN_SIZE)),
@@ -113,8 +130,123 @@ const createFragment = function (array, callback) {
   return fragment;
 };
 
+const popAdvertisement = function (array, callback) {
+  const fragment = document.createDocumentFragment();
+  fragment.append(callback(array[0]));
+
+  return fragment;
+};
+
+const generateHotelPictures = function (pics) {
+  const hotelPhotos = document.createDocumentFragment();
+
+  for (let i = 0; i < pics.length; i++) {
+    const pic = document.createElement(`img`);
+    pic.classList.add(`popup__photo`);
+    pic.src = pics[i];
+    pic.width = hotelPhotoWidth;
+    pic.height = hotelPhotoHeight;
+    hotelPhotos.appendChild(pic);
+  }
+  return hotelPhotos;
+};
+
+const eraseBlock = function (div) {
+  div.style.display = `none`;
+};
+
+const renderCard = function (card) {
+  const offerCard = cardTemplate.cloneNode(true);
+  const cardTitle = offerCard.querySelector(`.popup__title`);
+  const cardAddress = offerCard.querySelector(`.popup__text--address`);
+  const cardPrice = offerCard.querySelector(`.popup__text--price`);
+  const cardType = offerCard.querySelector(`.popup__type`);
+  const cardRoomsGuests = offerCard.querySelector(`.popup__text--capacity`);
+  const cardCheck = offerCard.querySelector(`.popup__text--time`);
+  const features = offerCard.querySelector(`.popup__features`);
+  const cardDescription = offerCard.querySelector(`.popup__description`);
+  const cardPhotos = offerCard.querySelector(`.popup__photos`);
+  const cardLink = offerCard.querySelector(`.popup__avatar`);
+
+  // в map перед mapPins вставляет offerCard
+  map.insertBefore(offerCard, mapPins);
+
+  if (card.offer.title) {
+    cardTitle.textContent = card.offer.title;
+  } else {
+    eraseBlock(cardTitle);
+  }
+
+  if (card.offer.address) {
+    cardAddress.textContent = card.offer.address;
+  } else {
+    eraseBlock(cardAddress);
+  }
+
+  if (card.offer.price) {
+    cardPrice.textContent = `${card.offer.price} ₽ / ночь`;
+  } else {
+    eraseBlock(cardPrice);
+  }
+
+  if (card.offer.type) {
+    cardType.textContent = TYPE_RU[card.offer.type];
+  } else {
+    eraseBlock(cardType);
+  }
+
+  if (card.offer.guests) {
+    cardRoomsGuests.textContent = `${card.offer.rooms} комнаты для ${card.offer.guests} гостей`;
+  } else {
+    eraseBlock(cardRoomsGuests);
+  }
+
+  if (card.offer.checkout && card.offer.checkin) {
+    cardCheck.textContent = `Заезд после ${card.offer.checkin}, выезд до ${card.offer.checkout}`;
+  } else {
+    eraseBlock(cardCheck);
+  }
+
+  if (card.offer.features) {
+    let stock = ``;
+    for (let i = 0; i < card.offer.features.length; i++) {
+      if (i < card.offer.features.length - 1) {
+        stock += `${card.offer.features[i]}, `;
+      } else {
+        stock += `${card.offer.features[i]}`;
+      }
+    }
+    features.innerHTML = stock;
+  } else {
+    eraseBlock(features);
+  }
+
+  if (card.offer.description) {
+    cardDescription.textContent = card.offer.description;
+  } else {
+    eraseBlock(cardDescription);
+  }
+
+  if (card.offer.photos) {
+    cardPhotos.innerHTML = ``;
+    cardPhotos.appendChild(generateHotelPictures(card.offer.photos));
+  } else {
+    eraseBlock(cardPhotos);
+  }
+  if (card.author.avatar) {
+    cardLink.src = getAvatar(getRandomInRange(1, MOCK_AMOUNT));
+  } else {
+    eraseBlock(cardLink);
+  }
+
+  const fragmentCard = document.createDocumentFragment();
+  fragmentCard.appendChild(offerCard);
+  map.appendChild(fragmentCard);
+};
+
 const pinsFragment = createFragment(pinsArray, renderOffer);
 mapPins.append(pinsFragment);
 
+popAdvertisement(pinsArray, renderCard);
 
 map.classList.remove(`map--faded`);
