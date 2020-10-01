@@ -31,9 +31,12 @@ const DESCRIPTION = [
   `Самый бюджетный вариант! Жильё в центре города. Незабываемые впечатления о поездке гарантированы!`
 ];
 const map = document.querySelector(`.map`);
+const mainPin = document.querySelector(`.map__pin--main`);
 const mapPins = document.querySelector(`.map__pins`);
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
+const offerForm = document.querySelector(`.ad-form`);
+const mapFiltersForm = document.querySelector(`.map__filters`);
 const PIN_SIZE = 62;
 const pinYMin = 130;
 const pinYMax = 630;
@@ -250,3 +253,46 @@ mapPins.append(pinsFragment);
 popAdvertisement(pinsArray, renderCard);
 
 map.classList.remove(`map--faded`);
+
+
+mainPin.addEventListener(`mousedown`, logMouseButton);
+
+const disablePage = function () {
+  map.classList.add(`map--faded`);
+  offerForm.classList.add(`ad-form--disabled`);
+  mapFiltersForm.classList.add(`ad-form--disabled`);
+
+  const disableFieldsets = function (form) {
+    let fieldsets = form.children;
+    for (let i = 0; i < fieldsets.length; i++) {
+      fieldsets[i].setAttribute(`disabled`, `disabled`);
+    }
+  };
+  disableFieldsets(offerForm);
+  disableFieldsets(mapFiltersForm);
+// + Надо как-то передвигать мейн пин //
+};
+disablePage();
+
+function logMouseButton(e) {
+  if (typeof e === `object`) {
+    switch (e.button) {
+      case 0: activatePage();
+    }
+  }
+}
+
+const activatePage = function () {
+  map.classList.remove(`map--faded`);
+  offerForm.classList.remove(`ad-form--disabled`);
+  mapFiltersForm.classList.remove(`ad-form--disabled`);
+
+  const anableFieldsets = function (form) {
+    let fieldsets = form.children;
+    for (let i = 0; i < fieldsets.length; i++) {
+      fieldsets[i].removeAttribute(`disabled`, `disabled`);
+    }
+  };
+  anableFieldsets(offerForm);
+  anableFieldsets(mapFiltersForm);
+};
