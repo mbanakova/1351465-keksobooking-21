@@ -37,14 +37,17 @@ const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__
 const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
 const offerForm = document.querySelector(`.ad-form`);
 const mapFiltersForm = document.querySelector(`.map__filters`);
-const PIN_SIZE = 62;
+const addressInput = document.querySelector(`#address`);
+const selectRooms = document.querySelector(`#room_number`);
+const selectCapacity = document.querySelector(`#capacity`);
+const PIN_SIZE = 65;
+const PIN_TAG = 20;
 const pinYMin = 130;
 const pinYMax = 630;
 const pinXMin = 0;
 const pinXMax = mapPins.clientWidth;
 const hotelPhotoWidth = 45;
 const hotelPhotoHeight = 40;
-
 
 const getRandomInRange = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
@@ -248,14 +251,12 @@ const renderCard = function (card) {
 };
 
 const pinsFragment = createFragment(pinsArray, renderOffer);
-mapPins.append(pinsFragment);
-
-popAdvertisement(pinsArray, renderCard);
 
 map.classList.remove(`map--faded`);
 
 
-mainPin.addEventListener(`mousedown`, logMouseButton);
+// Активация страницы и деактивация
+mainPin.addEventListener(`mousedown`, clickMouseButton);
 
 const disablePage = function () {
   map.classList.add(`map--faded`);
@@ -274,9 +275,9 @@ const disablePage = function () {
 };
 disablePage();
 
-function logMouseButton(e) {
-  if (typeof e === `object`) {
-    switch (e.button) {
+function clickMouseButton(click) {
+  if (typeof click === `object`) {
+    switch (click.button) {
       case 0: activatePage();
     }
   }
@@ -293,6 +294,46 @@ const activatePage = function () {
       fieldsets[i].removeAttribute(`disabled`, `disabled`);
     }
   };
+
   anableFieldsets(offerForm);
   anableFieldsets(mapFiltersForm);
+  popAdvertisement(pinsArray, renderCard);
+  mapPins.append(pinsFragment);
 };
+
+
+mainPin.addEventListener(`keydown`, function (evt) {
+  if (evt.key === `Enter`) {
+    activatePage();
+  }
+});
+
+// Поле с адресом
+const renderAddressInput = function () {
+  let mainPinX = Math.round(parseInt(mainPin.style.left, 10) + (PIN_SIZE / 2));
+  let mainPinY = Math.round(parseInt(mainPin.style.top, 10) + PIN_SIZE + PIN_TAG);
+
+  addressInput.value = `${mainPinX}, ${mainPinY}`;
+};
+renderAddressInput();
+
+// Зависимость кол-ва гостей и вместимости комнат
+const validateCapacity = function (evt) {
+  const roomsSelected = +selectRooms.value;
+  const guestsSelected = +selectCapacity.value;
+
+  selectRooms.setCustomValidity(``);
+  selectCapacity.setCustomValidity(``);
+
+  if (guestsSelected > roomsSelected && roomsSelected !== 100) {
+    evt.target.setCustomValidity(`Выбранное жильё вмещает не более ${roomsSelected} гостя/гостей`);
+  } else if (guestsSelected > 0 && roomsSelected === 100) {
+    evt.target.setCustomValidity(`100 комнат - не для гостей`);
+  } else if (guestsSelected === 0 && roomsSelected !== 100) {
+    evt.target.setCustomValidity(`Не для гостей можно выбрать только 100 комнат`);
+  }
+  evt.target.reportValidity();
+};
+
+selectCapacity.addEventListener(`input`, validateCapacity);
+selectRooms.addEventListener(`input`, validateCapacity);
