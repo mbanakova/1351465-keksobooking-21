@@ -19,6 +19,7 @@ const PHOTOS = [
 const PRICE_MIN = 2000;
 const PRICE_MAX = 30000;
 const ROOMS = 4;
+const ROOMS_MAX = 100;
 const GUESTS = 6;
 const TITLE = [
   `Уютное гнездышко для молодоженов`,
@@ -254,10 +255,7 @@ const pinsFragment = createFragment(pinsArray, renderOffer);
 
 map.classList.remove(`map--faded`);
 
-
 // Активация страницы и деактивация
-mainPin.addEventListener(`mousedown`, clickMouseButton);
-
 const disablePage = function () {
   map.classList.add(`map--faded`);
   offerForm.classList.add(`ad-form--disabled`);
@@ -275,28 +273,30 @@ const disablePage = function () {
 };
 disablePage();
 
-function clickMouseButton(click) {
+const clickMouseButton = function (click) {
   if (typeof click === `object`) {
     switch (click.button) {
       case 0: activatePage();
     }
   }
-}
+};
+
+mainPin.addEventListener(`mousedown`, clickMouseButton);
 
 const activatePage = function () {
   map.classList.remove(`map--faded`);
   offerForm.classList.remove(`ad-form--disabled`);
   mapFiltersForm.classList.remove(`ad-form--disabled`);
 
-  const anableFieldsets = function (form) {
+  const enableFieldsets = function (form) {
     let fieldsets = form.children;
     for (let i = 0; i < fieldsets.length; i++) {
       fieldsets[i].removeAttribute(`disabled`, `disabled`);
     }
   };
 
-  anableFieldsets(offerForm);
-  anableFieldsets(mapFiltersForm);
+  enableFieldsets(offerForm);
+  enableFieldsets(mapFiltersForm);
   popAdvertisement(pinsArray, renderCard);
   mapPins.append(pinsFragment);
 };
@@ -325,11 +325,11 @@ const validateCapacity = function (evt) {
   selectRooms.setCustomValidity(``);
   selectCapacity.setCustomValidity(``);
 
-  if (guestsSelected > roomsSelected && roomsSelected !== 100) {
+  if (guestsSelected > roomsSelected && roomsSelected !== ROOMS_MAX) {
     evt.target.setCustomValidity(`Выбранное жильё вмещает не более ${roomsSelected} гостя/гостей`);
-  } else if (guestsSelected > 0 && roomsSelected === 100) {
+  } else if (guestsSelected > 0 && roomsSelected === ROOMS_MAX) {
     evt.target.setCustomValidity(`100 комнат - не для гостей`);
-  } else if (guestsSelected === 0 && roomsSelected !== 100) {
+  } else if (guestsSelected === 0 && roomsSelected !== ROOMS_MAX) {
     evt.target.setCustomValidity(`Не для гостей можно выбрать только 100 комнат`);
   }
   evt.target.reportValidity();
