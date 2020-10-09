@@ -1,6 +1,6 @@
 'use strict';
 
-const OFFERS = [];
+const CARDS = [];
 const MOCK_AMOUNT = 8;
 const TYPE = [`palace`, `flat`, `house`, `bungalow`];
 const TYPE_RU = {
@@ -9,6 +9,20 @@ const TYPE_RU = {
   house: `Дом`,
   bungalow: `Бунгало`
 };
+// const TYPES = {
+//   palace: {
+//     name: `Дворец`,
+//     minPrice: 10000},
+//   flat: {
+//     name: `Квартира`,
+//     minPrice: 1000},
+//   house: {
+//     name: `Дом`,
+//     minPrice: 5000},
+//   bungalow: {
+//     name: `Бунгало`,
+//     minPrice: 0}
+// };
 const TIME = [`12:00`, `13:00`, `14:00`];
 const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
 const PHOTOS = [
@@ -77,9 +91,9 @@ const getAvatar = function (num) {
   return `img/avatars/user0${num}.png`;
 };
 
-const renderOffersArray = function (index) {
+const generateCardsArray = function (index) {
   for (let i = 0; i < MOCK_AMOUNT; i++) {
-    OFFERS[i] = {
+    CARDS[i] = {
       "author": {
         "avatar": getAvatar(index)
       },
@@ -102,20 +116,20 @@ const renderOffersArray = function (index) {
       }
     };
   }
-  return OFFERS;
+  return CARDS;
 };
 
-const getPinsArray = function (quantity) {
+const generatePinsArray = function (quantity) {
   let pinsArray = [];
   for (let i = 0; i < quantity; i++) {
     //  i+1 для отсчёта картинок с 1
-    const offer = renderOffersArray(i + 1)[i];
-    pinsArray.push(offer);
+    const card = generateCardsArray(i + 1)[i];
+    pinsArray.push(card);
   }
   return pinsArray;
 };
 
-const pinsArray = getPinsArray(MOCK_AMOUNT);
+const pinsArray = generatePinsArray(MOCK_AMOUNT);
 
 const renderOffer = function (offer) {
   const offerPin = pinTemplate.cloneNode(true);
@@ -126,8 +140,21 @@ const renderOffer = function (offer) {
   pinImg.src = offer.author.avatar;
   pinImg.alt = offer.offer.title;
 
+  offerPin.addEventListener(`click`, function () {
+    eraseCard();
+    popAdvertisement(offer, renderCard);
+  });
+
   return offerPin;
 };
+
+const eraseCard = function () {
+  const currentCard = document.querySelector(`.map__card`);
+  if (currentCard) {
+    currentCard.remove();
+  }
+};
+
 
 const createFragment = function (array, callback) {
   const fragment = document.createDocumentFragment();
@@ -137,10 +164,9 @@ const createFragment = function (array, callback) {
   return fragment;
 };
 
-const popAdvertisement = function (array, callback) {
+const popAdvertisement = function (offer, callback) {
   const fragment = document.createDocumentFragment();
-  fragment.append(callback(array[0]));
-
+  fragment.append(callback(offer));
   return fragment;
 };
 
@@ -164,6 +190,7 @@ const eraseBlock = function (div) {
 
 const renderCard = function (card) {
   const offerCard = cardTemplate.cloneNode(true);
+  const close = offerCard.querySelector(`.popup__close`);
   const cardTitle = offerCard.querySelector(`.popup__title`);
   const cardAddress = offerCard.querySelector(`.popup__text--address`);
   const cardPrice = offerCard.querySelector(`.popup__text--price`);
@@ -241,7 +268,7 @@ const renderCard = function (card) {
     eraseBlock(cardPhotos);
   }
   if (card.author.avatar) {
-    cardLink.src = getAvatar(getRandomInRange(1, MOCK_AMOUNT));
+    cardLink.src = card.author.avatar;
   } else {
     eraseBlock(cardLink);
   }
@@ -249,6 +276,14 @@ const renderCard = function (card) {
   const fragmentCard = document.createDocumentFragment();
   fragmentCard.appendChild(offerCard);
   map.appendChild(fragmentCard);
+
+  close.addEventListener(`click`, eraseCard);
+  close.addEventListener(`keydown`, function (evt) {
+    if (evt.key === `Escape`) {
+      evt.preventDefault();
+      eraseCard();
+    }
+  });
 };
 
 const pinsFragment = createFragment(pinsArray, renderOffer);
@@ -282,6 +317,12 @@ const clickMouseButton = function (click) {
 };
 
 mainPin.addEventListener(`mousedown`, clickMouseButton);
+map.addEventListener(`keydown`, function (evt) {
+  if (evt.key === `Escape`) {
+    evt.preventDefault();
+    eraseCard();
+  }
+});
 
 const activatePage = function () {
   map.classList.remove(`map--faded`);
@@ -297,10 +338,9 @@ const activatePage = function () {
 
   enableFieldsets(offerForm);
   enableFieldsets(mapFiltersForm);
-  popAdvertisement(pinsArray, renderCard);
+  popAdvertisement(pinsArray[0], renderCard);
   mapPins.append(pinsFragment);
 };
-
 
 mainPin.addEventListener(`keydown`, function (evt) {
   if (evt.key === `Enter`) {
@@ -337,3 +377,99 @@ const validateCapacity = function (evt) {
 
 selectCapacity.addEventListener(`input`, validateCapacity);
 selectRooms.addEventListener(`input`, validateCapacity);
+
+// Валидация заголовка объявления
+const titleInput = document.querySelector(`#title`);
+
+const MIN_TITLE_LENGTH = 30;
+const MAX_TITLE_LENGTH = 100;
+
+titleInput.addEventListener(`input`, function () {
+  const titleLength = titleInput.value.length;
+
+  if (titleLength < MIN_TITLE_LENGTH) {
+    titleInput.setCustomValidity(`Ещё + ${MIN_TITLE_LENGTH - titleLength} + симв.`);
+  } else if (titleLength > MAX_TITLE_LENGTH) {
+    titleInput.setCustomValidity(`Удалите лишние + ${titleLength - MAX_TITLE_LENGTH} + симв.`);
+  } else {
+    titleInput.setCustomValidity(``);
+  }
+
+  titleInput.reportValidity();
+});
+
+titleInput.addEventListener(`invalid`, function () {
+  if (titleInput.validity.tooShort) {
+    titleInput.setCustomValidity(`Минимальная длина — 30 символов`);
+  } else if (titleInput.validity.tooLong) {
+    titleInput.setCustomValidity(`Максимальная длина — 100 символов`);
+  } else if (titleInput.validity.valueMissing) {
+    titleInput.setCustomValidity(`Обязательное текстовое поле`);
+  } else {
+    titleInput.setCustomValidity(``);
+  }
+});
+
+// Валидация стоимости жилья
+const accomodationPrice = document.querySelector(`#price`);
+
+const MAX_PRICE = 1000000;
+
+accomodationPrice.addEventListener(`input`, function () {
+  if (accomodationPrice.value > MAX_PRICE) {
+    accomodationPrice.setCustomValidity(`Таких дорогих отелей нет. Максимальная стоимость за ночь - 1000000.`);
+  } else {
+    titleInput.setCustomValidity(``);
+  }
+  accomodationPrice.reportValidity();
+});
+
+accomodationPrice.addEventListener(`invalid`, function () {
+  if (accomodationPrice.validity.valueMissing) {
+    accomodationPrice.setCustomValidity(`Обязательное поле`);
+  } else {
+    accomodationPrice.setCustomValidity(``);
+  }
+});
+
+// Валидация типа жилья и влияния его на стоимость
+const accomodationType = document.querySelector(`#type`);
+
+accomodationType.addEventListener(`change`, function () {
+  let typeValue = accomodationType.value;
+  if (typeValue === TYPE[3]) {
+    accomodationPrice.min = 0;
+  } else if (typeValue === TYPE[1]) {
+    accomodationPrice.min = 1000;
+  } else if (typeValue === TYPE[2]) {
+    accomodationPrice.min = 5000;
+  } else if (typeValue === TYPE[0]) {
+    accomodationPrice.min = 10000;
+  }
+  accomodationPrice.placeholder = accomodationPrice.min;
+  accomodationType.reportValidity();
+});
+
+accomodationType.addEventListener(`invalid`, function () {
+  if (accomodationType.validity.valueMissing) {
+    accomodationType.setCustomValidity(`Обязательное поле`);
+  } else {
+    accomodationType.setCustomValidity(``);
+  }
+});
+
+// Валидация времени заезда / выезда
+const checkInTime = document.querySelector(`#timein`);
+const checkOutTime = document.querySelector(`#timeout`);
+
+checkInTime.addEventListener(`input`, function () {
+  let inValue = checkInTime.value.slice(0, 2);
+  let outValue = checkOutTime.value.slice(0, 2);
+  if (inValue >= outValue) {
+    checkInTime.setCustomValidity(``);
+  } else {
+    checkInTime.setCustomValidity(`Освободить номер после ${outValue}:00 можно за доплату`);
+  }
+
+  checkInTime.reportValidity();
+});
