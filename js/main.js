@@ -65,4 +65,8 @@
       activatePage();
     }
   });
+
+  window.main = {
+    mainPin
+  };
 })();

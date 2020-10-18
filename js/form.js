@@ -131,4 +131,8 @@
 
     checkInTime.reportValidity();
   });
+
+  window.form = {
+    renderAddressInput
+  };
 })();
