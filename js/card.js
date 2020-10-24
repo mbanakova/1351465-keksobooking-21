@@ -5,6 +5,11 @@
   const hotelPhotoHeight = 40;
   const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
 
+  const popError = function (error) {
+    popError.querySelector(`.error__message`).textContent = error;
+    document.body.insertAdjacentElement(`afterbegin`, popError);
+  };
+
   const eraseCard = function () {
     const currentCard = document.querySelector(`.map__card`);
     if (currentCard) {
@@ -130,6 +135,7 @@
 
   window.card = {
     renderCard,
-    eraseCard
+    eraseCard,
+    popError
   };
 })();

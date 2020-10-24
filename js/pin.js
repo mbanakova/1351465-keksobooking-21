@@ -1,7 +1,7 @@
 'use strict';
 (function () {
-
   const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+  const MAX_SIMILAR_PIN_COUNT = 8;
 
   const generatePinsArray = function (quantity) {
     let pinsArray = [];
@@ -32,25 +32,16 @@
     return offerPin;
   };
 
-  const createFragment = function (array, callback) {
-    const fragment = document.createDocumentFragment();
-    for (let i = 0; i < array.length; i++) {
-      fragment.append(callback(array[i]));
-    }
-    return fragment;
-  };
-
   const popAdvertisement = function (offer, callback) {
     const fragment = document.createDocumentFragment();
     fragment.append(callback(offer));
     return fragment;
   };
 
-  const pinsFragment = createFragment(pinsArray, renderPin);
-
   window.pin = {
-    pinsFragment,
     popAdvertisement,
-    pinsArray
+    pinsArray,
+    MAX_SIMILAR_PIN_COUNT,
+    renderPin
   };
 })();
