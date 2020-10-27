@@ -27,13 +27,12 @@
 
   const clickMouseButton = function (click) {
     if (typeof click === `object`) {
-      switch (click.button) {
-        case 0: activatePage();
-      }
+      activatePage();
+      mainPin.removeEventListener(`mousedown`, clickMouseButton);
     }
   };
-
   mainPin.addEventListener(`mousedown`, clickMouseButton);
+
   map.addEventListener(`keydown`, function (evt) {
     if (evt.key === `Escape`) {
       evt.preventDefault();
@@ -55,7 +54,6 @@
 
     enableFieldsets(offerForm);
     enableFieldsets(mapFiltersForm);
-    window.pin.popAdvertisement(window.pin.pinsArray[0], window.card.renderCard);
 
     window.backend.load(function (pins) {
       const createFragment = function (array, callback) {
@@ -63,37 +61,15 @@
         for (let i = 0; i < window.pin.MAX_SIMILAR_PIN_COUNT; i++) {
           fragment.append(callback(array[i]));
         }
-        window.data.mapPins.appendChild(fragment);
+        return fragment;
       };
       let pinsFragment = createFragment(pins, window.pin.renderPin);
       window.data.mapPins.append(pinsFragment);
-    }, errorHandler);
-  };
-
-  const errorHandler = function (error) {
-    const errorTemplate = document.querySelector(`#error`).content.querySelector(`.error`);
-    const errorMessage = errorTemplate.querySelector(`.error__message`);
-    const errorButton = errorTemplate.querySelector(`.error__button`);
-
-    errorTemplate.style = `z-index: 100; margin: auto; text-align: center; background-color: blue;`;
-    errorTemplate.style.position = `absolute`;
-    errorTemplate.style.fontSize = `36px`;
-
-    errorMessage.textContent = error;
-    document.body.insertAdjacentElement(`afterbegin`, errorTemplate);
-
-    errorButton.addEventListener(`click`, function () {
-      errorTemplate.style.display = `none`;
-    });
-
-    errorButton.addEventListener(`keydown`, function (evt) {
-      if (evt.key === `Escape`) {
-        errorTemplate.style.display = `none`;
-      }
-    });
+    }, window.error.errorHandler);
   };
 
   mainPin.addEventListener(`keydown`, function (evt) {
+    evt.preventDefault();
     if (evt.key === `Enter`) {
       activatePage();
     }
