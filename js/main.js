@@ -22,19 +22,17 @@
     };
     disableFieldsets(offerForm);
     disableFieldsets(mapFiltersForm);
-  // + Надо как-то передвигать мейн пин //
   };
   disablePage();
 
   const clickMouseButton = function (click) {
     if (typeof click === `object`) {
-      switch (click.button) {
-        case 0: activatePage();
-      }
+      activatePage();
+      mainPin.removeEventListener(`mousedown`, clickMouseButton);
     }
   };
-
   mainPin.addEventListener(`mousedown`, clickMouseButton);
+
   map.addEventListener(`keydown`, function (evt) {
     if (evt.key === `Escape`) {
       evt.preventDefault();
@@ -56,11 +54,22 @@
 
     enableFieldsets(offerForm);
     enableFieldsets(mapFiltersForm);
-    window.pin.popAdvertisement(window.pin.pinsArray[0], window.card.renderCard);
-    window.data.mapPins.append(window.pin.pinsFragment);
+
+    window.backend.load(function (pins) {
+      const createFragment = function (array, callback) {
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < window.pin.MAX_SIMILAR_PIN_COUNT; i++) {
+          fragment.append(callback(array[i]));
+        }
+        return fragment;
+      };
+      let pinsFragment = createFragment(pins, window.pin.renderPin);
+      window.data.mapPins.append(pinsFragment);
+    }, window.error.errorHandler);
   };
 
   mainPin.addEventListener(`keydown`, function (evt) {
+    evt.preventDefault();
     if (evt.key === `Enter`) {
       activatePage();
     }
