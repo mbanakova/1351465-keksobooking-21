@@ -4,6 +4,12 @@
   const TIMEOUT = 10000;
   const URL_GET = `https://21.javascript.pages.academy/keksobooking/data`;
   const URL_SEND = `https://21.javascript.pages.academy/keksobooking`;
+  const HTTP_STATUS = {
+    success: 200,
+    badRequest: 400,
+    unauthorized: 401,
+    notFound: 404
+  };
   window.backend = {};
 
   const loadData = function (onLoad, onError) {
@@ -13,17 +19,17 @@
     xhr.addEventListener(`load`, function () {
       let error = ``;
       switch (xhr.status) {
-        case 200:
+        case HTTP_STATUS.success:
           onLoad(xhr.response);
           break;
 
-        case 400:
+        case HTTP_STATUS.badRequest:
           error = `Неверный запрос`;
           break;
-        case 401:
+        case HTTP_STATUS.unauthorized:
           error = `Пользователь не авторизован`;
           break;
-        case 404:
+        case HTTP_STATUS.notFound:
           error = `Ничего не найдено`;
           break;
 
