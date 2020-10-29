@@ -117,7 +117,7 @@
         </fieldset>
         <fieldset class="ad-form__element">
           <label class="ad-form__label" for="price">Цена за ночь, руб.</label>
-          <input id="price" name="price" type="number" placeholder="1000" min="0" max="1000000" required>
+          <input id="price" name="price" type="number" placeholder="1000" min="0" max="1000000" value="1000" required>
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--time">
           <label class="ad-form__label" for="timein">Время заезда и выезда</label>
@@ -144,9 +144,9 @@
         <fieldset class="ad-form__element">
           <label class="ad-form__label" for="capacity">Количество мест</label>
           <select id="capacity" name="capacity">
-            <option value="3" selected>для 3 гостей</option>
+            <option value="3">для 3 гостей</option>
             <option value="2">для 2 гостей</option>
-            <option value="1">для 1 гостя</option>
+            <option value="1" selected>для 1 гостя</option>
             <option value="0">не для гостей</option>
           </select>
         </fieldset>
@@ -249,13 +249,13 @@
   </template>
 
 <script src="js/backend.js"></script>
-<script src="js/error.js"></script>
 <script src="js/data.js"></script>
 <script src="js/card.js"></script>
 <script src="js/pin.js"></script>
 <script src="js/main.js"></script>
 <script src="js/move-pin.js"></script>
+<script src="js/error.js"></script>
 <script src="js/form.js"></script>
-
+<script src="js/success.js"></script>
 </body>
 </html>

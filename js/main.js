@@ -76,6 +76,9 @@
   });
 
   window.main = {
-    mainPin
+    mainPin,
+    disablePage,
+    activatePage,
+    clickMouseButton
   };
 })();
