@@ -5,7 +5,6 @@
   const successHandler = function () {
     const successTemplate = document.querySelector(`#success`).content.querySelector(`.success`);
     const successMessage = successTemplate.querySelector(`.success__message`);
-    const userPins = document.querySelectorAll(`.map__pin`);
 
     successTemplate.style = `z-index: 100; margin: auto; text-align: center; background-color: rgba(9, 13, 25, 0.8);`;
     successTemplate.style.position = `fixed`;
@@ -22,13 +21,13 @@
       if (success) {
         success.remove();
       }
-      for (let i = 0; i < userPins.length; i++) {
-        if (userPins[i].classList.contains(`map__pin--main`)) {
-          userPins[i].style.top = 375 + `px`;
-          userPins[i].style.left = 570 + `px`;
+      for (let i = 0; i < window.main.mapPins.length; i++) {
+        if (window.main.mapPins[i].classList.contains(`map__pin--main`)) {
+          window.main.mapPins[i].style.top = 375 + `px`;
+          window.main.mapPins[i].style.left = 570 + `px`;
           continue;
         } else {
-          userPins[i].remove();
+          window.main.mapPins[i].remove();
         }
       }
       window.main.mainPin.addEventListener(`mousedown`, window.main.clickMouseButton);

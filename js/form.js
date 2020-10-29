@@ -138,6 +138,9 @@
   resetButton.addEventListener(`click`, function (evt) {
     evt.preventDefault();
     form.reset();
+    window.main.resetPage();
+    window.main.deletePins();
+    window.card.eraseCard();
   });
 
   // Отправка формы

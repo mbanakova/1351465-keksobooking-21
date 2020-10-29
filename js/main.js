@@ -5,7 +5,7 @@
   const mainPin = document.querySelector(`.map__pin--main`);
   const offerForm = document.querySelector(`.ad-form`);
   const mapFiltersForm = document.querySelector(`.map__filters`);
-
+  const mapPins = document.querySelector(`.map__pins`).children;
   map.classList.remove(`map--faded`);
 
   // Активация страницы и деактивация
@@ -20,6 +20,7 @@
         fieldsets[i].setAttribute(`disabled`, `disabled`);
       }
     };
+
     disableFieldsets(offerForm);
     disableFieldsets(mapFiltersForm);
   };
@@ -52,6 +53,12 @@
       }
     };
 
+    for (let i = 0; i < mapPins.length; i++) {
+      if (mapPins[i].classList.contains(`map__pin`) && !mapPins[i].classList.contains(`map__pin--main`)) {
+        mapPins[i].style.display = `block`;
+      }
+    }
+
     enableFieldsets(offerForm);
     enableFieldsets(mapFiltersForm);
 
@@ -75,10 +82,30 @@
     }
   });
 
+  const deletePins = function () {
+    for (let i = 0; i < mapPins.length; i++) {
+      if (mapPins[i].classList.contains(`map__pin--main`)) {
+        mapPins[i].style.top = 375 + `px`;
+        mapPins[i].style.left = 570 + `px`;
+      } else {
+        mapPins[i].remove();
+      }
+    }
+  };
+
+  const resetPage = function () {
+    map.classList.add(`map--faded`);
+    window.form.form.classList.add(`ad-form--disabled`);
+    mainPin.addEventListener(`mousedown`, clickMouseButton);
+  };
+
   window.main = {
     mainPin,
+    mapPins,
     disablePage,
     activatePage,
-    clickMouseButton
+    clickMouseButton,
+    deletePins,
+    resetPage
   };
 })();
