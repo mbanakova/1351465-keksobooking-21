@@ -76,4 +76,7 @@
     document.addEventListener(`mouseup`, onMouseUp);
   });
 
+  window.movePin = {
+    mapBorder
+  };
 })();

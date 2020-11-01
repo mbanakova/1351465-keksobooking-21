@@ -137,18 +137,23 @@
   const resetButton = form.querySelector(`.ad-form__reset`);
   resetButton.addEventListener(`click`, function (evt) {
     evt.preventDefault();
+    resetData();
+  });
+
+  const resetData = function () {
     form.reset();
     window.main.resetPage();
     window.main.deletePins();
     window.card.eraseCard();
-  });
+    renderAddressInput();
+  };
 
   // Отправка формы
-
   const submitValidForm = function () {
     window.success.successHandler();
-    window.main.disablePage();
-    window.card.eraseCard();
+    window.main.mainPin.style.top = (window.movePin.mapBorder.bottom - window.movePin.mapBorder.top) / 2 + `px`;
+    window.main.mainPin.style.left = (window.movePin.mapBorder.right - window.movePin.mapBorder.left) / 2 + `px`;
+    resetData();
   };
 
   const submitHandler = function (evt) {

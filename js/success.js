@@ -13,24 +13,11 @@
     document.body.insertAdjacentElement(`afterbegin`, successTemplate);
 
     const submitRestartPage = function () {
-      window.main.disablePage();
-      window.card.eraseCard();
-      window.form.form.reset();
 
       let success = document.querySelector(`.success`);
       if (success) {
         success.remove();
       }
-      for (let i = 0; i < window.main.mapPins.length; i++) {
-        if (window.main.mapPins[i].classList.contains(`map__pin--main`)) {
-          window.main.mapPins[i].style.top = 375 + `px`;
-          window.main.mapPins[i].style.left = 570 + `px`;
-          continue;
-        } else {
-          window.main.mapPins[i].remove();
-        }
-      }
-      window.main.mainPin.addEventListener(`mousedown`, window.main.clickMouseButton);
     };
 
     const clickEscapeButton = function (evt) {
@@ -45,6 +32,7 @@
       submitRestartPage();
     });
   };
+
   window.success = {
     successHandler
   };
