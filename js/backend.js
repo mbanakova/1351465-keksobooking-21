@@ -18,6 +18,7 @@
 
     xhr.addEventListener(`load`, function () {
       let error = ``;
+      // let success = `666`;
       switch (xhr.status) {
         case HTTP_STATUS.success:
           onLoad(xhr.response);

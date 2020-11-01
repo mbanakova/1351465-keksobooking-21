@@ -5,7 +5,7 @@
   const mainPin = document.querySelector(`.map__pin--main`);
   const offerForm = document.querySelector(`.ad-form`);
   const mapFiltersForm = document.querySelector(`.map__filters`);
-
+  const mapPins = document.querySelector(`.map__pins`).children;
   map.classList.remove(`map--faded`);
 
   // Активация страницы и деактивация
@@ -20,6 +20,7 @@
         fieldsets[i].setAttribute(`disabled`, `disabled`);
       }
     };
+
     disableFieldsets(offerForm);
     disableFieldsets(mapFiltersForm);
   };
@@ -75,7 +76,30 @@
     }
   });
 
+  window.mapListElement = map.querySelector(`.map__pins`);
+
+  const deletePins = function () {
+    const buttons = window.mapListElement.querySelectorAll(`button`);
+    mainPin.style.top = 375 + `px`;
+    mainPin.style.left = 570 + `px`;
+    for (let i = 1; i < buttons.length; i++) {
+      window.mapListElement.removeChild(buttons[i]);
+    }
+  };
+
+  const resetPage = function () {
+    map.classList.add(`map--faded`);
+    window.form.form.classList.add(`ad-form--disabled`);
+    mainPin.addEventListener(`mousedown`, clickMouseButton);
+  };
+
   window.main = {
-    mainPin
+    mainPin,
+    mapPins,
+    disablePage,
+    activatePage,
+    clickMouseButton,
+    deletePins,
+    resetPage
   };
 })();

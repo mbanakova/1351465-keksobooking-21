@@ -1,5 +1,6 @@
 'use strict';
 (function () {
+  const form = document.querySelector(`.ad-form`);
   const ROOMS_MAX = 100;
   const mainPin = document.querySelector(`.map__pin--main`);
   const addressInput = document.querySelector(`#address`);
@@ -132,7 +133,38 @@
     checkInTime.reportValidity();
   });
 
+  // Очистка формы
+  const resetButton = form.querySelector(`.ad-form__reset`);
+  resetButton.addEventListener(`click`, function (evt) {
+    evt.preventDefault();
+    resetData();
+  });
+
+  const resetData = function () {
+    form.reset();
+    window.main.resetPage();
+    window.main.deletePins();
+    window.card.eraseCard();
+    renderAddressInput();
+  };
+
+  // Отправка формы
+  const submitValidForm = function () {
+    window.success.successHandler();
+    window.main.mainPin.style.top = (window.movePin.mapBorder.bottom - window.movePin.mapBorder.top) / 2 + `px`;
+    window.main.mainPin.style.left = (window.movePin.mapBorder.right - window.movePin.mapBorder.left) / 2 + `px`;
+    resetData();
+  };
+
+  const submitHandler = function (evt) {
+    window.backend.save(new FormData(form), submitValidForm, window.error.errorHandler);
+    evt.preventDefault();
+  };
+
+  form.addEventListener(`submit`, submitHandler);
+
   window.form = {
-    renderAddressInput
+    renderAddressInput,
+    form
   };
 })();
