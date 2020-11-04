@@ -3,6 +3,7 @@
 (function () {
 
   const successHandler = function () {
+
     const successTemplate = document.querySelector(`#success`).content.querySelector(`.success`);
     const successMessage = successTemplate.querySelector(`.success__message`);
 
@@ -16,7 +17,7 @@
 
       let success = document.querySelector(`.success`);
       if (success) {
-        success.remove();
+        success.style.display = `none`;
       }
     };
 
@@ -26,6 +27,7 @@
       }
       document.removeEventListener(`keydown`, clickEscapeButton);
     };
+
     document.addEventListener(`keydown`, clickEscapeButton);
 
     document.addEventListener(`click`, function () {

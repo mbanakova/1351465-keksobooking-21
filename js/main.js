@@ -56,17 +56,7 @@
     enableFieldsets(offerForm);
     enableFieldsets(mapFiltersForm);
 
-    window.backend.load(function (pins) {
-      const createFragment = function (array, callback) {
-        const fragment = document.createDocumentFragment();
-        for (let i = 0; i < window.pin.MAX_SIMILAR_PIN_COUNT; i++) {
-          fragment.append(callback(array[i]));
-        }
-        return fragment;
-      };
-      let pinsFragment = createFragment(pins, window.pin.renderPin);
-      window.data.mapPins.append(pinsFragment);
-    }, window.error.errorHandler);
+    window.backend.load(window.pin.successPinsLoad, window.error.errorHandler);
   };
 
   mainPin.addEventListener(`keydown`, function (evt) {

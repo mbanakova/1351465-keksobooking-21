@@ -146,6 +146,7 @@
     window.main.deletePins();
     window.card.eraseCard();
     renderAddressInput();
+    window.pin.housingTypeOption.value = `any`;
   };
 
   // Отправка формы
@@ -154,6 +155,7 @@
     window.main.mainPin.style.top = (window.movePin.mapBorder.bottom - window.movePin.mapBorder.top) / 2 + `px`;
     window.main.mainPin.style.left = (window.movePin.mapBorder.right - window.movePin.mapBorder.left) / 2 + `px`;
     resetData();
+
   };
 
   const submitHandler = function (evt) {
