@@ -1,14 +1,22 @@
 'use strict';
-(function () {
+(() => {
   const form = document.querySelector(`.ad-form`);
   const ROOMS_MAX = 100;
   const mainPin = document.querySelector(`.map__pin--main`);
   const addressInput = document.querySelector(`#address`);
   const selectRooms = document.querySelector(`#room_number`);
   const selectCapacity = document.querySelector(`#capacity`);
+  const titleInput = document.querySelector(`#title`);
+  const accomodationPrice = document.querySelector(`#price`);
+  const accomodationType = document.querySelector(`#type`);
+  const checkInTime = document.querySelector(`#timein`);
+  const checkOutTime = document.querySelector(`#timeout`);
+  const MIN_TITLE_LENGTH = 30;
+  const MAX_TITLE_LENGTH = 100;
+  const MAX_PRICE = 1000000;
 
   // Поле с адресом
-  const renderAddressInput = function () {
+  const renderAddressInput = () => {
     let mainPinX = Math.round(parseInt(mainPin.style.left, 10) + (window.data.PIN_SIZE / 2));
     let mainPinY = Math.round(parseInt(mainPin.style.top, 10) + window.data.PIN_SIZE + window.data.PIN_TAG);
 
@@ -17,7 +25,7 @@
   renderAddressInput();
 
   // Зависимость кол-ва гостей и вместимости комнат
-  const validateCapacity = function (evt) {
+  const validateCapacity = (evt) => {
     const roomsSelected = +selectRooms.value;
     const guestsSelected = +selectCapacity.value;
 
@@ -38,12 +46,7 @@
   selectRooms.addEventListener(`input`, validateCapacity);
 
   // Валидация заголовка объявления
-  const titleInput = document.querySelector(`#title`);
-
-  const MIN_TITLE_LENGTH = 30;
-  const MAX_TITLE_LENGTH = 100;
-
-  titleInput.addEventListener(`input`, function () {
+  titleInput.addEventListener(`input`, () => {
     const titleLength = titleInput.value.length;
 
     if (titleLength < MIN_TITLE_LENGTH) {
@@ -57,7 +60,7 @@
     titleInput.reportValidity();
   });
 
-  titleInput.addEventListener(`invalid`, function () {
+  titleInput.addEventListener(`invalid`, () => {
     if (titleInput.validity.tooShort) {
       titleInput.setCustomValidity(`Минимальная длина — 30 символов`);
     } else if (titleInput.validity.tooLong) {
@@ -70,11 +73,7 @@
   });
 
   // Валидация стоимости жилья
-  const accomodationPrice = document.querySelector(`#price`);
-
-  const MAX_PRICE = 1000000;
-
-  accomodationPrice.addEventListener(`input`, function () {
+  accomodationPrice.addEventListener(`input`, () => {
     if (accomodationPrice.value > MAX_PRICE) {
       accomodationPrice.setCustomValidity(`Таких дорогих отелей нет. Максимальная стоимость за ночь - 1000000.`);
     } else {
@@ -83,7 +82,7 @@
     accomodationPrice.reportValidity();
   });
 
-  accomodationPrice.addEventListener(`invalid`, function () {
+  accomodationPrice.addEventListener(`invalid`, () => {
     if (accomodationPrice.validity.valueMissing) {
       accomodationPrice.setCustomValidity(`Обязательное поле`);
     } else {
@@ -92,9 +91,7 @@
   });
 
   // Валидация типа жилья и влияния его на стоимость
-  const accomodationType = document.querySelector(`#type`);
-
-  accomodationType.addEventListener(`change`, function () {
+  accomodationType.addEventListener(`change`, () => {
     let typeValue = accomodationType.value;
     if (typeValue === window.data.TYPE[3]) {
       accomodationPrice.min = 0;
@@ -109,7 +106,7 @@
     accomodationType.reportValidity();
   });
 
-  accomodationType.addEventListener(`invalid`, function () {
+  accomodationType.addEventListener(`invalid`, () => {
     if (accomodationType.validity.valueMissing) {
       accomodationType.setCustomValidity(`Обязательное поле`);
     } else {
@@ -117,30 +114,25 @@
     }
   });
 
-  // Валидация времени заезда / выезда
-  const checkInTime = document.querySelector(`#timein`);
-  const checkOutTime = document.querySelector(`#timeout`);
+  // Синхронизация времени заезда / выезда
+  checkInTime.addEventListener(`input`, () => {
+    let inValue = checkInTime.value;
+    checkOutTime.value = inValue;
+  });
 
-  checkInTime.addEventListener(`input`, function () {
-    let inValue = checkInTime.value.slice(0, 2);
-    let outValue = checkOutTime.value.slice(0, 2);
-    if (inValue >= outValue) {
-      checkInTime.setCustomValidity(``);
-    } else {
-      checkInTime.setCustomValidity(`Освободить номер после ${outValue}:00 можно за доплату`);
-    }
-
-    checkInTime.reportValidity();
+  checkOutTime.addEventListener(`input`, () => {
+    let outValue = checkOutTime.value;
+    checkInTime.value = outValue;
   });
 
   // Очистка формы
   const resetButton = form.querySelector(`.ad-form__reset`);
-  resetButton.addEventListener(`click`, function (evt) {
+  resetButton.addEventListener(`click`, (evt) => {
     evt.preventDefault();
     resetData();
   });
 
-  const resetData = function () {
+  const resetData = () => {
     form.reset();
     window.main.resetPage();
     window.main.deletePins();
@@ -150,15 +142,14 @@
   };
 
   // Отправка формы
-  const submitValidForm = function () {
+  const submitValidForm = () => {
     window.success.successHandler();
     window.main.mainPin.style.top = (window.movePin.mapBorder.bottom - window.movePin.mapBorder.top) / 2 + `px`;
     window.main.mainPin.style.left = (window.movePin.mapBorder.right - window.movePin.mapBorder.left) / 2 + `px`;
     resetData();
-
   };
 
-  const submitHandler = function (evt) {
+  const submitHandler = (evt) => {
     window.backend.save(new FormData(form), submitValidForm, window.error.errorHandler);
     evt.preventDefault();
   };

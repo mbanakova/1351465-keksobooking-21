@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+(() => {
   const TIMEOUT = 10000;
   const URL_GET = `https://21.javascript.pages.academy/keksobooking/data`;
   const URL_SEND = `https://21.javascript.pages.academy/keksobooking`;
@@ -12,13 +12,12 @@
   };
   window.backend = {};
 
-  const loadData = function (onLoad, onError) {
+  const loadData = (onLoad, onError) => {
     const xhr = new XMLHttpRequest();
     xhr.responseType = `json`;
 
-    xhr.addEventListener(`load`, function () {
+    xhr.addEventListener(`load`, () => {
       let error = ``;
-      // let success = `666`;
       switch (xhr.status) {
         case HTTP_STATUS.success:
           onLoad(xhr.response);
@@ -44,23 +43,23 @@
     });
     xhr.timeout = TIMEOUT;
 
-    xhr.addEventListener(`error`, function () {
+    xhr.addEventListener(`error`, () => {
       onError(`Произошла ошибка соединения`);
     });
 
-    xhr.addEventListener(`timeout`, function () {
+    xhr.addEventListener(`timeout`, () => {
       onError(`Запрос не успел выполниться за ` + xhr.timeout + `мс`);
     });
     return xhr;
   };
 
-  window.backend.load = function (onLoad, onError) {
+  window.backend.load = (onLoad, onError) => {
     let xhr = loadData(onLoad, onError);
     xhr.open(`GET`, URL_GET);
     xhr.send();
   };
 
-  window.backend.save = function (data, onLoad, onError) {
+  window.backend.save = (data, onLoad, onError) => {
     let xhr = loadData(onLoad, onError);
     xhr.open(`POST`, URL_SEND);
     xhr.send(data);

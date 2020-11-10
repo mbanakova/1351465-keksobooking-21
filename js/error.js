@@ -1,8 +1,8 @@
 'use strict';
 
-(function () {
+(() => {
 
-  const errorHandler = function (error) {
+  const errorHandler = (error) => {
     const errorTemplate = document.querySelector(`#error`).content.querySelector(`.error`);
     const errorMessage = errorTemplate.querySelector(`.error__message`);
     const errorButton = errorTemplate.querySelector(`.error__button`);
@@ -14,11 +14,11 @@
     errorMessage.textContent = error;
     document.body.insertAdjacentElement(`afterbegin`, errorTemplate);
 
-    errorButton.addEventListener(`click`, function () {
+    errorButton.addEventListener(`click`, () => {
       errorTemplate.style.display = `none`;
     });
 
-    errorButton.addEventListener(`keydown`, function (evt) {
+    errorButton.addEventListener(`keydown`, (evt) => {
       if (evt.key === `Escape`) {
         errorTemplate.style.display = `none`;
       }

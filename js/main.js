@@ -1,20 +1,21 @@
 'use strict';
-(function () {
+(() => {
 
   const map = document.querySelector(`.map`);
   const mainPin = document.querySelector(`.map__pin--main`);
   const offerForm = document.querySelector(`.ad-form`);
   const mapFiltersForm = document.querySelector(`.map__filters`);
   const mapPins = document.querySelector(`.map__pins`).children;
+
   map.classList.remove(`map--faded`);
 
   // Активация страницы и деактивация
-  const disablePage = function () {
+  const disablePage = () => {
     map.classList.add(`map--faded`);
     offerForm.classList.add(`ad-form--disabled`);
     mapFiltersForm.classList.add(`ad-form--disabled`);
 
-    const disableFieldsets = function (form) {
+    const disableFieldsets = (form) => {
       let fieldsets = form.children;
       for (let i = 0; i < fieldsets.length; i++) {
         fieldsets[i].setAttribute(`disabled`, `disabled`);
@@ -26,7 +27,7 @@
   };
   disablePage();
 
-  const clickMouseButton = function (click) {
+  const clickMouseButton = (click) => {
     if (typeof click === `object`) {
       activatePage();
       mainPin.removeEventListener(`mousedown`, clickMouseButton);
@@ -34,19 +35,19 @@
   };
   mainPin.addEventListener(`mousedown`, clickMouseButton);
 
-  map.addEventListener(`keydown`, function (evt) {
+  map.addEventListener(`keydown`, (evt) => {
     if (evt.key === `Escape`) {
       evt.preventDefault();
       window.card.eraseCard();
     }
   });
 
-  const activatePage = function () {
+  const activatePage = () => {
     map.classList.remove(`map--faded`);
     offerForm.classList.remove(`ad-form--disabled`);
     mapFiltersForm.classList.remove(`ad-form--disabled`);
 
-    const enableFieldsets = function (form) {
+    const enableFieldsets = (form) => {
       let fieldsets = form.children;
       for (let i = 0; i < fieldsets.length; i++) {
         fieldsets[i].removeAttribute(`disabled`, `disabled`);
@@ -59,7 +60,7 @@
     window.backend.load(window.pin.successPinsLoad, window.error.errorHandler);
   };
 
-  mainPin.addEventListener(`keydown`, function (evt) {
+  mainPin.addEventListener(`keydown`, (evt) => {
     evt.preventDefault();
     if (evt.key === `Enter`) {
       activatePage();
@@ -68,7 +69,7 @@
 
   window.mapListElement = map.querySelector(`.map__pins`);
 
-  const deletePins = function () {
+  const deletePins = () => {
     const buttons = window.mapListElement.querySelectorAll(`button`);
     mainPin.style.top = 375 + `px`;
     mainPin.style.left = 570 + `px`;
@@ -77,7 +78,7 @@
     }
   };
 
-  const resetPage = function () {
+  const resetPage = () => {
     map.classList.add(`map--faded`);
     window.form.form.classList.add(`ad-form--disabled`);
     mainPin.addEventListener(`mousedown`, clickMouseButton);

@@ -1,7 +1,7 @@
 'use strict';
-(function () {
-  const muffin = window.main.mainPin.querySelector(`img`);
+(() => {
 
+  const muffin = window.main.mainPin.querySelector(`img`);
   const mapBorder = {
     top: 130,
     right: 1136,
@@ -9,7 +9,7 @@
     left: 0
   };
 
-  muffin.addEventListener(`mousedown`, function (evt) {
+  muffin.addEventListener(`mousedown`, (evt) => {
     evt.preventDefault();
 
     let startCoords = {
@@ -19,7 +19,7 @@
 
     let dragged = false;
 
-    let onMouseMove = function (moveEvt) {
+    let onMouseMove = (moveEvt) => {
       moveEvt.preventDefault();
 
       dragged = true;
@@ -56,14 +56,14 @@
       window.form.renderAddressInput();
     };
 
-    let onMouseUp = function (upEvt) {
+    let onMouseUp = (upEvt) => {
       upEvt.preventDefault();
 
       document.removeEventListener(`mousemove`, onMouseMove);
       document.removeEventListener(`mouseup`, onMouseUp);
 
       if (dragged) {
-        let onClickPreventDefault = function (clickEvt) {
+        let onClickPreventDefault = (clickEvt) => {
           clickEvt.preventDefault();
           muffin.removeEventListener(`click`, onClickPreventDefault);
         };

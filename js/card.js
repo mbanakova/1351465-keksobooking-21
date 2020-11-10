@@ -1,23 +1,23 @@
 'use strict';
-(function () {
+(() => {
 
   const hotelPhotoWidth = 45;
   const hotelPhotoHeight = 40;
   const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
 
-  const popError = function (error) {
+  const popError = (error) => {
     popError.querySelector(`.error__message`).textContent = error;
     document.body.insertAdjacentElement(`afterbegin`, popError);
   };
 
-  const eraseCard = function () {
+  const eraseCard = () => {
     const currentCard = document.querySelector(`.map__card`);
     if (currentCard) {
       currentCard.remove();
     }
   };
 
-  const generateHotelPictures = function (pics) {
+  const generateHotelPictures = (pics) => {
     const hotelPhotos = document.createDocumentFragment();
 
     for (let i = 0; i < pics.length; i++) {
@@ -31,11 +31,11 @@
     return hotelPhotos;
   };
 
-  const eraseBlock = function (div) {
+  const eraseBlock = (div) => {
     div.style.display = `none`;
   };
 
-  const renderCard = function (card) {
+  const renderCard = (card) => {
     const offerCard = cardTemplate.cloneNode(true);
     const close = offerCard.querySelector(`.popup__close`);
     const cardTitle = offerCard.querySelector(`.popup__title`);
@@ -48,8 +48,8 @@
     const cardDescription = offerCard.querySelector(`.popup__description`);
     const cardPhotos = offerCard.querySelector(`.popup__photos`);
     const cardLink = offerCard.querySelector(`.popup__avatar`);
+    const fragmentCard = document.createDocumentFragment();
 
-    // в map перед mapPins вставляет offerCard
     window.data.map.insertBefore(offerCard, window.pin.mapPins);
 
     if (card.offer.title) {
@@ -120,12 +120,11 @@
       eraseBlock(cardLink);
     }
 
-    const fragmentCard = document.createDocumentFragment();
     fragmentCard.appendChild(offerCard);
     window.data.map.appendChild(fragmentCard);
 
     close.addEventListener(`click`, eraseCard);
-    close.addEventListener(`keydown`, function (evt) {
+    close.addEventListener(`keydown`, (evt) => {
       if (evt.key === `Escape`) {
         evt.preventDefault();
         eraseCard();

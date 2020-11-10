@@ -1,9 +1,8 @@
 'use strict';
 
-(function () {
+(() => {
 
-  const successHandler = function () {
-
+  const successHandler = () => {
     const successTemplate = document.querySelector(`#success`).content.querySelector(`.success`);
     const successMessage = successTemplate.querySelector(`.success__message`);
 
@@ -13,15 +12,14 @@
     successMessage.textContent = `Ваше объявление успешно размещено!`;
     document.body.insertAdjacentElement(`afterbegin`, successTemplate);
 
-    const submitRestartPage = function () {
-
+    const submitRestartPage = () => {
       let success = document.querySelector(`.success`);
       if (success) {
         success.style.display = `none`;
       }
     };
 
-    const clickEscapeButton = function (evt) {
+    const clickEscapeButton = (evt) => {
       if (evt.key === `Escape` || evt.key === `Enter`) {
         submitRestartPage();
       }
@@ -30,7 +28,7 @@
 
     document.addEventListener(`keydown`, clickEscapeButton);
 
-    document.addEventListener(`click`, function () {
+    document.addEventListener(`click`, () => {
       submitRestartPage();
     });
   };
